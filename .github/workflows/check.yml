@@ -1,25 +1,28 @@
-name: Zepto PS5 checker
+name: Zepto PS5 Checker
 
 on:
-  workflow_dispatch:
   schedule:
     - cron: "*/15 * * * *"
-
-permissions:
-  contents: read
+  workflow_dispatch:
 
 jobs:
-  check:
+  check-stock:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Check Zepto listing
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run PS5 tracker
         env:
-          DELIVERY_PINCODE: "335001"
-        run: python tracker.py
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python .github/workflows/tracker.py
